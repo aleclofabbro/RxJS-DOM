@@ -126,6 +126,22 @@ function normalizeAjaxSuccessEvent(e, xhr, settings) {
         xhr = settings.createXHR();;
       } catch (err) {
         observer.onError(err);
+        return this;
+      }
+      var params = settings.params;
+      if(params && !settings.url.endsWith('?'))
+          settings.url += '?';
+      for (var param in params) {
+        if (hasOwnProperty.call(params, param)) {
+          var values = params[param];
+          if(!(values instanceof Array))
+            values = [values];
+          values.forEach(function(value){
+            if(typeof value === 'object' && root.JSON && typeof root.JSON.stringify === 'function')
+              value = JSON.stringify(value);
+            settings.url += [param, value].join('=') + '&';
+          });
+        }
       }
 
       try {
